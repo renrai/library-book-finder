@@ -6,17 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ProjectLibraryDomain.Models;
-using ProjectLibraryDomain.Models.Requests;
+using ProjectLibraryDomain.Models.DTO;
 
 namespace ProjectLibraryDomain.IService
 {
-    public interface IUSerService
+    public interface ILoginService
     {
-        bool Post(UserRequestPost request);
-        Task<bool> Put(UserRequestPut request);
-        Task<List<User>> Get();
-        Task<User> GetById(Guid id);
+        Task<RefreshToken> Login (LoginDTO request);
 
-        Task<bool> Delete(Guid id);
     }
 }

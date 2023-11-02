@@ -46,31 +46,53 @@ namespace ProjectLibraryService.Services
             return await _unitOfWork.UserRepository.GetById(id);
         }
 
-        public User Post(UserRequestPost request)
+        public bool Post(UserRequestPost request)
         {
             User user = new User();
             user.UserName = request.UserName;
-            user.Password = request.Password;
+            user.Password = base64Encode(request.Password);
             user.Role = request.Role;
             user.Login = request.Login;
             _unitOfWork.UserRepository.Add(user);
             _unitOfWork.Commit();
-            return user;
+            return true;
         }
 
-        public async Task<User> Put(UserRequestPut request)
+        public async Task<bool> Put(UserRequestPut request)
         {
             var user = await _unitOfWork.UserRepository.GetById(request.Id);
             if (user is null)
-                return null;
+                return false;
 
             user.UpdateDate = DateTime.UtcNow.AddHours(-3);
+
             user.UserName = request.UserName;
-            user.Password = request.Password;
+
+            if (!string.IsNullOrEmpty(request.Password))
+            {
+              user.Password = base64Encode(request.Password);
+            }
+
             user.Role = request.Role;
+
             _unitOfWork.UserRepository.Update(user);
             _unitOfWork.Commit();
-            return user;
+            return true;
+        }
+
+        public static string base64Encode(string sData) // Encode
+        {
+            try
+            {
+                byte[] encData_byte = new byte[sData.Length];
+                encData_byte = System.Text.Encoding.UTF8.GetBytes(sData);
+                string encodedData = Convert.ToBase64String(encData_byte);
+                return encodedData;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error in base64Encode" + ex.Message);
+            }
         }
     }
 }

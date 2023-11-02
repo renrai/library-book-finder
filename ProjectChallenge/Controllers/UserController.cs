@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProjectChallengeDomain.IService;
 using ProjectChallengeDomain.Models.Requests;
 using ProjectLibraryDomain.IService;
@@ -6,6 +7,7 @@ using ProjectLibraryDomain.Models.Requests;
 
 namespace ProjectLibraryAPI.Controllers
 {
+    [Authorize]
     [Route("[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -54,8 +56,8 @@ namespace ProjectLibraryAPI.Controllers
         /// </summary>
         /// <param name="User">User data</param>
         /// <returns>User successfully created</returns>
-        /// <response code="200">User object</response>
-        /// <response code="400">User invalid data</response>
+        /// <response code="200">true</response>
+        /// <response code="400">false</response>
         /// <response code="500">Internal server error</response>
         [HttpPost]
         public IActionResult CreateUser(UserRequestPost User)
@@ -68,8 +70,8 @@ namespace ProjectLibraryAPI.Controllers
         /// </summary> 
         /// <param name="id">User id to be updated</param>
         /// <param name="User">User data</param>
-        /// <response code="200">User successfully updated</response>
-        /// <response code="400">User invalid data</response>
+        /// <response code="200">true</response>
+        /// <response code="400">false</response>
         /// <response code="404">User not found</response>
         /// <response code="500">Error to update user</response>
         [HttpPut]

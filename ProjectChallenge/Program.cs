@@ -1,8 +1,11 @@
 using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ProjectChallengeAPI.Filter;
 using ProjectChallengeAPI.Middlewares;
@@ -16,14 +19,19 @@ using ProjectLibraryData.Database.Repositories;
 using ProjectLibraryData.Database.Repositories.IRepositories;
 using ProjectLibraryDomain.IService;
 using ProjectLibraryService.Services;
+using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
+using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 ConfigurationManager configuration = builder.Configuration;
 
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.DisableConstructorMapping();
+}, AppDomain.CurrentDomain.GetAssemblies());
 
 // Add services to the container.
 
@@ -39,11 +47,22 @@ builder.Services.AddTransient<IUserRepository, UserRepository>();
 //services
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IUSerService, UserService>();
+builder.Services.AddScoped<ILoginService, LoginService>();
 
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddSwaggerGen(c =>
 {
+    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        Description = "Standard Authorization header using the Bearer scheme (\"bearer {token}\")",
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
+    });
+
+    c.OperationFilter<SecurityRequirementsOperationFilter>();
+
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     c.IncludeXmlComments(xmlPath);
@@ -57,11 +76,34 @@ builder.Services.AddSwaggerGen(c =>
        });
 
 });
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
+                .GetBytes(configuration["JwtToken"])),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    });
+builder.Services.AddCors(options => options.AddPolicy(name: "NgOrigins",
+    policy =>
+    {
+        policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
+    }));
 builder.Services.AddDbContext<ProjectContextDb>(options =>
 {
-    options.UseInMemoryDatabase("LibraryDb")
-        .EnableSensitiveDataLogging()
-        .ConfigureWarnings(b => b.Ignore(InMemoryEventId.TransactionIgnoredWarning));
+    options.UseSqlServer(configuration["ConnectionString"],
+                                        sqlServerOptionsAction: sqlOptions =>
+                                        {
+                                            sqlOptions.MigrationsAssembly(typeof(ProjectContextDb).GetTypeInfo().Assembly.GetName().Name);
+                                            //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
+                                            sqlOptions.EnableRetryOnFailure(maxRetryCount: 10, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                                        });
+    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 builder.Services.AddControllers(options =>
 {
@@ -104,5 +146,7 @@ app.UseSwaggerUI(c =>
 
     c.SwaggerEndpoint("swagger/v1/swagger.json", "v1");
 });
+
+app.UseCors("NgOrigins");
 
 app.Run();

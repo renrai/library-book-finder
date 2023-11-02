@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProjectChallengeDomain.IService;
 using ProjectChallengeDomain.Models;
 using ProjectChallengeDomain.Models.Requests;
 
 namespace ProjectChallengeAPI.Controllers
 {
+    [Authorize]
     [Route("[controller]")]
     [ApiController]
     public class BookController : ControllerBase
