@@ -1,5 +1,6 @@
 ﻿using ProjectChallengeDomain.Models;
 using ProjectChallengeDomain.Models.Requests;
+using ProjectLibraryDomain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,7 @@ namespace ProjectChallengeDomain.IService
         Task<Book> GetById(Guid id);
 
         Task<bool> Delete(Guid id);
+        Task<List<Book>> Search(PaginationFilter filter);
+
     }
 }

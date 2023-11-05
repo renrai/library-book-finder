@@ -50,8 +50,8 @@ namespace ProjectLibraryService.Services
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Login),
-                new Claim(ClaimTypes.Role, user.Role.ToString())
+                new Claim("Name", user.Login),
+                new Claim("Role", user.Role.ToString())
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(

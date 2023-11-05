@@ -24,7 +24,8 @@ namespace ProjectLibraryAPI.Controllers
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
             var token = await _loginService.Login(loginDTO);
-
+            if (token == null)
+                return NotFound(new { message = "Login ou senha incorretos!" });
             return Ok(token);
         }
     }

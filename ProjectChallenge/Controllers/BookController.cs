@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using ProjectChallengeDomain.IService;
 using ProjectChallengeDomain.Models;
 using ProjectChallengeDomain.Models.Requests;
+using ProjectLibraryDomain.Models;
+using System.Security.Claims;
 
 namespace ProjectChallengeAPI.Controllers
 {
@@ -61,7 +63,10 @@ namespace ProjectChallengeAPI.Controllers
         [HttpPost]
         public IActionResult CreateBook(BookRequestPost Book)
         {
+            ClaimsIdentityExtensions.ValidaPerfil((ClaimsIdentity)HttpContext.User.Identity, ClaimsIdentityExtensions.AdminRole());
+
             var response = _serviceBook.Post(Book);
+
             return Ok(response);
         }
         /// <summary>
@@ -76,6 +81,8 @@ namespace ProjectChallengeAPI.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateBook(BookRequestPut Book)
         {
+            ClaimsIdentityExtensions.ValidaPerfil((ClaimsIdentity)HttpContext.User.Identity, ClaimsIdentityExtensions.AdminRole());
+
             var response =await _serviceBook.Put(Book);
 
             if (response == null)
@@ -93,10 +100,27 @@ namespace ProjectChallengeAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(Guid id)
         {
+            ClaimsIdentityExtensions.ValidaPerfil((ClaimsIdentity)HttpContext.User.Identity, ClaimsIdentityExtensions.AdminRole());
+
             var response = await _serviceBook.Delete(id);
             if (!response)
                 return NotFound(new { message = "Book not found." });
             return Ok(true);
+        }
+        /// <summary>
+        /// Search a book pagination
+        /// </summary>
+        /// <param name="PaginationFilter">Book filter</param>
+        /// <response code="200">Books found</response>
+        /// <response code="404">Book not found</response>
+        /// <response code="500">Server error</response>
+        [HttpPost("search")]
+        public async Task<IActionResult> SearchBook(PaginationFilter filter)
+        {
+            var response = await _serviceBook.Search(filter);
+            if (response == null || response.Count() == 0)
+                return NotFound(new { message = "Book not found." });
+            return Ok(response);
         }
     }
 }

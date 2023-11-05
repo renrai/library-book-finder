@@ -2,6 +2,7 @@
 using ProjectChallengeDomain.IService;
 using ProjectChallengeDomain.Models;
 using ProjectChallengeDomain.Models.Requests;
+using ProjectLibraryDomain.Models;
 using System.Linq;
 
 namespace ProjectChallengeService.Services
@@ -64,6 +65,23 @@ namespace ProjectChallengeService.Services
             _unitOfWork.BookRepository.Update(book);
             _unitOfWork.Commit();
             return book;
+        }
+
+        public async Task<List<Book>> Search(PaginationFilter filter)
+        {
+            int skip = filter.PageSize * filter.PageNumber;
+
+            if (!string.IsNullOrEmpty(filter.SearchString))
+            {
+                var books = await _unitOfWork.BookRepository.GetWherePaged(skip, filter.PageSize, a => a.BookName.ToLower().Contains(filter.SearchString.ToLower())
+            || a.Author.ToLower().Contains(filter.SearchString) || a.Shelf.ToLower().Contains(filter.SearchString.ToLower()));
+                return books.ToList();
+            }
+            else
+            {
+                var books = await _unitOfWork.BookRepository.GetWherePaged(skip, filter.PageSize, a => true);
+                return books.ToList();
+            }
         }
     }
 }

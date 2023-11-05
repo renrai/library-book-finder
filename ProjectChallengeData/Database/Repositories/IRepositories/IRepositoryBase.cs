@@ -16,6 +16,7 @@ namespace ProjectChallengeData.Database.Repositories.IRepositories
         Task<MODEL> GetById(Guid id);
         Task<IEnumerable<MODEL>> GetAll();
 
+        Task<IEnumerable<MODEL>> GetWherePaged(int skip, int take, Expression<Func<MODEL, bool>> predicate, Expression<Func<IQueryable<MODEL>, IIncludableQueryable<MODEL, object>>> include = null);
         Task<MODEL> FirstOrDefault(Expression<Func<MODEL, bool>> predicate, Expression<Func<IQueryable<MODEL>, IIncludableQueryable<MODEL, object>>> include = null);
     }
 }

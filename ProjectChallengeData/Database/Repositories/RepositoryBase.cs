@@ -89,6 +89,21 @@ namespace ProjectChallengeData.Database.Repositories
 
             return _mapper.Map<MODEL>(result);
         }
+        public async Task<IEnumerable<MODEL>> GetWherePaged(int skip, int take, Expression<Func<MODEL, bool>> predicate, Expression<Func<IQueryable<MODEL>, IIncludableQueryable<MODEL, object>>> include = null)
+        {
+            var query = _db.Set<ENTITY>().AsQueryable().AsNoTracking();
+            var whereEntity = _mapper.Map<Expression<Func<ENTITY, bool>>>(predicate);
+            var includeEntity = _mapper.Map<Expression<Func<IQueryable<ENTITY>, IIncludableQueryable<ENTITY, object>>>>(include);
+
+            if (include != null)
+            {
+                query = includeEntity.Compile()(query);
+            }
+
+            var result = await query.Where(whereEntity).AsNoTracking().OrderBy(x => x.CreationDate).Skip(skip).Take(take).ToListAsync();
+
+            return _mapper.Map<List<MODEL>>(result);
+        }
         #endregion
     }
 }

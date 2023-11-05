@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using ProjectChallengeDomain.IService;
 using ProjectChallengeDomain.Models.Requests;
 using ProjectLibraryDomain.IService;
+using ProjectLibraryDomain.Models;
 using ProjectLibraryDomain.Models.Requests;
+using System.Security.Claims;
 
 namespace ProjectLibraryAPI.Controllers
 {
@@ -62,6 +64,8 @@ namespace ProjectLibraryAPI.Controllers
         [HttpPost]
         public IActionResult CreateUser(UserRequestPost User)
         {
+            ClaimsIdentityExtensions.ValidaPerfil((ClaimsIdentity)HttpContext.User.Identity, ClaimsIdentityExtensions.AdminRole());
+
             var response = _serviceUser.Post(User);
             return Ok(response);
         }
@@ -77,6 +81,8 @@ namespace ProjectLibraryAPI.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateUser(UserRequestPut User)
         {
+            ClaimsIdentityExtensions.ValidaPerfil((ClaimsIdentity)HttpContext.User.Identity, ClaimsIdentityExtensions.AdminRole());
+
             var response = await _serviceUser.Put(User);
 
             if (response == null)
@@ -94,6 +100,8 @@ namespace ProjectLibraryAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
+            ClaimsIdentityExtensions.ValidaPerfil((ClaimsIdentity)HttpContext.User.Identity, ClaimsIdentityExtensions.AdminRole());
+
             var response = await _serviceUser.Delete(id);
             if (!response)
                 return NotFound(new { message = "User not found." });
