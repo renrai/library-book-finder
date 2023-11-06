@@ -62,11 +62,13 @@ namespace ProjectLibraryAPI.Controllers
         /// <response code="400">false</response>
         /// <response code="500">Internal server error</response>
         [HttpPost]
-        public IActionResult CreateUser(UserRequestPost User)
+        public IActionResult CreateUser(UserRequestPost user)
         {
             ClaimsIdentityExtensions.ValidaPerfil((ClaimsIdentity)HttpContext.User.Identity, ClaimsIdentityExtensions.AdminRole());
 
-            var response = _serviceUser.Post(User);
+            var userMethod = ClaimsIdentityExtensions.GetUsuario((ClaimsIdentity)HttpContext.User.Identity);
+
+            var response = _serviceUser.Post(user, userMethod);
             return Ok(response);
         }
         /// <summary>
@@ -79,11 +81,13 @@ namespace ProjectLibraryAPI.Controllers
         /// <response code="404">User not found</response>
         /// <response code="500">Error to update user</response>
         [HttpPut]
-        public async Task<IActionResult> UpdateUser(UserRequestPut User)
+        public async Task<IActionResult> UpdateUser(UserRequestPut user)
         {
             ClaimsIdentityExtensions.ValidaPerfil((ClaimsIdentity)HttpContext.User.Identity, ClaimsIdentityExtensions.AdminRole());
 
-            var response = await _serviceUser.Put(User);
+            var userMethod = ClaimsIdentityExtensions.GetUsuario((ClaimsIdentity)HttpContext.User.Identity);
+
+            var response = await _serviceUser.Put(user, userMethod);
 
             if (response == null)
                 return NotFound(new { message = "User not found." });
@@ -101,6 +105,8 @@ namespace ProjectLibraryAPI.Controllers
         public async Task<IActionResult> DeleteUser(Guid id)
         {
             ClaimsIdentityExtensions.ValidaPerfil((ClaimsIdentity)HttpContext.User.Identity, ClaimsIdentityExtensions.AdminRole());
+
+            var userMethod = ClaimsIdentityExtensions.GetUsuario((ClaimsIdentity)HttpContext.User.Identity);
 
             var response = await _serviceUser.Delete(id);
             if (!response)

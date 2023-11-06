@@ -63,9 +63,10 @@ namespace ProjectChallengeAPI.Controllers
         [HttpPost]
         public IActionResult CreateBook(BookRequestPost Book)
         {
-          //  ClaimsIdentityExtensions.ValidaPerfil((ClaimsIdentity)HttpContext.User.Identity, ClaimsIdentityExtensions.AdminRole());
+            ClaimsIdentityExtensions.ValidaPerfil((ClaimsIdentity)HttpContext.User.Identity, ClaimsIdentityExtensions.AdminRole());
+            var userLog = ClaimsIdentityExtensions.GetUsuario((ClaimsIdentity)HttpContext.User.Identity);
 
-            var response = _serviceBook.Post(Book);
+            var response = _serviceBook.Post(Book, userLog);
 
             return Ok(response);
         }
@@ -82,8 +83,9 @@ namespace ProjectChallengeAPI.Controllers
         public async Task<IActionResult> UpdateBook(BookRequestPut Book)
         {
             ClaimsIdentityExtensions.ValidaPerfil((ClaimsIdentity)HttpContext.User.Identity, ClaimsIdentityExtensions.AdminRole());
+            var userLog = ClaimsIdentityExtensions.GetUsuario((ClaimsIdentity)HttpContext.User.Identity);
 
-            var response =await _serviceBook.Put(Book);
+            var response =await _serviceBook.Put(Book, userLog);
 
             if (response == null)
                 return NotFound(new { message = "Book not found." });

@@ -40,7 +40,7 @@ namespace ProjectChallengeService.Services
             return await _unitOfWork.BookRepository.GetById(id);    
         }
 
-        public Book Post(BookRequestPost request)
+        public Book Post(BookRequestPost request, string userLog)
         {
             Book book = new Book();
             book.BookName = request.BookName;
@@ -48,12 +48,14 @@ namespace ProjectChallengeService.Services
             book.Shelf = request.Shelf;
             book.Author = request.Author;
             book.Genre = request.Genre;
+            book.UserLastUpdate = userLog;
+            book.UserCreation = userLog;
             _unitOfWork.BookRepository.Add(book);
             _unitOfWork.Commit();
             return book;
         }
 
-        public async Task<Book> Put(BookRequestPut request)
+        public async Task<Book> Put(BookRequestPut request, string userLog)
         {
             var book = await _unitOfWork.BookRepository.GetById(request.Id);
             if (book is null)
@@ -64,6 +66,7 @@ namespace ProjectChallengeService.Services
             book.BookName = request.BookName;
             book.Year = request.Year;
             book.Genre = request.Genre;
+            book.UserLastUpdate = userLog;
             _unitOfWork.BookRepository.Update(book);
             _unitOfWork.Commit();
             return book;

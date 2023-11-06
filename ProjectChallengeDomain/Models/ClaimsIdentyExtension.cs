@@ -26,7 +26,7 @@ namespace ProjectLibraryDomain.Models
         }
         public static string? GetUsuario(this ClaimsIdentity claimIdentity)
         {
-            var usuario = claimIdentity.Claims?.FirstOrDefault(c => c.Type == "preferred_username")?.Value;
+            var usuario = claimIdentity.Claims?.FirstOrDefault(c => c.Type == "Name")?.Value;
             return usuario;
         }
 

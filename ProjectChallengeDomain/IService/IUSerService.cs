@@ -12,8 +12,8 @@ namespace ProjectLibraryDomain.IService
 {
     public interface IUSerService
     {
-        bool Post(UserRequestPost request);
-        Task<bool> Put(UserRequestPut request);
+        bool Post(UserRequestPost request, string user);
+        Task<bool> Put(UserRequestPut request, string user);
         Task<List<User>> Get();
         Task<User> GetById(Guid id);
 

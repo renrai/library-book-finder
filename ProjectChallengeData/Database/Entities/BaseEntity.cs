@@ -18,5 +18,7 @@ namespace ProjectChallengeData.Database.Entities
         public Guid Id { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime UpdateDate { get; set; }
+        public string UserCreation { get; set; }
+        public string UserLastUpdate { get; set; }
     }
 }

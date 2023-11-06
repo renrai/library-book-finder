@@ -11,8 +11,8 @@ namespace ProjectChallengeDomain.IService
 {
     public interface IBookService
     {
-        Book Post(BookRequestPost request);
-        Task<Book> Put(BookRequestPut request);
+        Book Post(BookRequestPost request, string user);
+        Task<Book> Put(BookRequestPut request, string user);
         Task<List<Book>> Get();
         Task<Book> GetById(Guid id);
 

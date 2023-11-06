@@ -46,19 +46,21 @@ namespace ProjectLibraryService.Services
             return await _unitOfWork.UserRepository.GetById(id);
         }
 
-        public bool Post(UserRequestPost request)
+        public bool Post(UserRequestPost request, string userLog)
         {
             User user = new User();
             user.UserName = request.UserName;
             user.Password = base64Encode(request.Password);
             user.Role = request.Role;
             user.Login = request.Login;
+            user.UserCreation = userLog;
+            user.UserLastUpdate = userLog;
             _unitOfWork.UserRepository.Add(user);
             _unitOfWork.Commit();
             return true;
         }
 
-        public async Task<bool> Put(UserRequestPut request)
+        public async Task<bool> Put(UserRequestPut request, string userLog)
         {
             var user = await _unitOfWork.UserRepository.GetById(request.Id);
             if (user is null)
@@ -74,7 +76,7 @@ namespace ProjectLibraryService.Services
             }
 
             user.Role = request.Role;
-
+            user.UserLastUpdate = userLog;
             _unitOfWork.UserRepository.Update(user);
             _unitOfWork.Commit();
             return true;
