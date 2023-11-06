@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace ProjectChallengeAPI.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("[controller]")]
     [ApiController]
     public class BookController : ControllerBase
@@ -63,7 +63,7 @@ namespace ProjectChallengeAPI.Controllers
         [HttpPost]
         public IActionResult CreateBook(BookRequestPost Book)
         {
-            ClaimsIdentityExtensions.ValidaPerfil((ClaimsIdentity)HttpContext.User.Identity, ClaimsIdentityExtensions.AdminRole());
+          //  ClaimsIdentityExtensions.ValidaPerfil((ClaimsIdentity)HttpContext.User.Identity, ClaimsIdentityExtensions.AdminRole());
 
             var response = _serviceBook.Post(Book);
 

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectChallengeData.Database;
 
@@ -11,9 +12,11 @@ using ProjectChallengeData.Database;
 namespace ProjectLibraryData.Migrations
 {
     [DbContext(typeof(ProjectContextDb))]
-    partial class ProjectContextDbModelSnapshot : ModelSnapshot
+    [Migration("20231106165734_Genre-option")]
+    partial class Genreoption
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

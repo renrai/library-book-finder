@@ -32,7 +32,7 @@ namespace ProjectChallengeService.Services
         public async Task<List<Book>> Get()
         {
             var books = await _unitOfWork.BookRepository.GetAll();
-            return books.ToList();
+            return books.OrderByDescending(a => a.CreationDate).ToList();
         }
 
         public async Task<Book> GetById(Guid id)
@@ -47,6 +47,7 @@ namespace ProjectChallengeService.Services
             book.Year = request.Year;
             book.Shelf = request.Shelf;
             book.Author = request.Author;
+            book.Genre = request.Genre;
             _unitOfWork.BookRepository.Add(book);
             _unitOfWork.Commit();
             return book;
@@ -62,6 +63,7 @@ namespace ProjectChallengeService.Services
             book.Shelf = request.Shelf;
             book.BookName = request.BookName;
             book.Year = request.Year;
+            book.Genre = request.Genre;
             _unitOfWork.BookRepository.Update(book);
             _unitOfWork.Commit();
             return book;
@@ -74,7 +76,7 @@ namespace ProjectChallengeService.Services
             if (!string.IsNullOrEmpty(filter.SearchString))
             {
                 var books = await _unitOfWork.BookRepository.GetWherePaged(skip, filter.PageSize, a => a.BookName.ToLower().Contains(filter.SearchString.ToLower())
-            || a.Author.ToLower().Contains(filter.SearchString) || a.Shelf.ToLower().Contains(filter.SearchString.ToLower()));
+            || a.Author.ToLower().Contains(filter.SearchString) || a.Shelf.ToLower().Contains(filter.SearchString.ToLower()) || a.Genre.ToLower().Contains(filter.SearchString.ToLower()));
                 return books.ToList();
             }
             else
